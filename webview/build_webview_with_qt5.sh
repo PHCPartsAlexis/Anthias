@@ -15,7 +15,7 @@ DEBIAN_VERSION=$(lsb_release -cs)
 MAKE_CORES="$(expr $(nproc) + 2)"
 
 ANTHIAS_RELEASE_URL="https://github.com/Screenly/Anthias/releases"
-WEBVIEW_VERSION="0.3.3"
+WEBVIEW_VERSION="0.3.5"
 
 mkdir -p "$BUILD_TARGET"
 mkdir -p "$SRC"
@@ -41,8 +41,16 @@ function download_and_extract_qt5() {
     WEBVIEW_DL_URL="$ANTHIAS_RELEASE_URL/download/WebView-v$WEBVIEW_VERSION/qt5-$QT_VERSION-$DEBIAN_VERSION-$DEVICE.tar.gz"
     WEBVIEW_DL_URL_SHA256="$WEBVIEW_DL_URL.sha256"
 
-    curl -sL "$WEBVIEW_DL_URL" -o /tmp/qt5-$QT_VERSION-$DEBIAN_VERSION-$DEVICE.tar.gz
-    curl -sL "$WEBVIEW_DL_URL_SHA256" -o /tmp/qt5-$QT_VERSION-$DEBIAN_VERSION-$DEVICE.tar.gz.sha256
+    if [ ! -f /tmp/qt5-$QT_VERSION-$DEBIAN_VERSION-$DEVICE.tar.gz ]; then
+        curl -sL "$WEBVIEW_DL_URL" -o /tmp/qt5-$QT_VERSION-$DEBIAN_VERSION-$DEVICE.tar.gz
+    fi
+
+    if [ ! -f /tmp/qt5-$QT_VERSION-$DEBIAN_VERSION-$DEVICE.tar.gz.sha256 ]; then
+        curl -sL "$WEBVIEW_DL_URL_SHA256" -o /tmp/qt5-$QT_VERSION-$DEBIAN_VERSION-$DEVICE.tar.gz.sha256
+    fi
+
+    cp -n /tmp/qt5-$QT_VERSION-$DEBIAN_VERSION-$DEVICE.tar.gz /build/
+    cp -n /tmp/qt5-$QT_VERSION-$DEBIAN_VERSION-$DEVICE.tar.gz.sha256 /build/
 
     cd /tmp
     sha256sum -c "qt5-$QT_VERSION-$DEBIAN_VERSION-$DEVICE.tar.gz.sha256"
